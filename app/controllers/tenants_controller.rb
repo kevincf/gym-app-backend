@@ -47,7 +47,7 @@ class TenantsController < ApplicationController
     end
   end
 
-  # DELETE /tenants/1 or /tenants/1.json
+  # DELETE /tenants/1 or /tenants/1.jso
   def destroy
     @tenant.destroy
 
