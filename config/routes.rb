@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :exercises
+  resources :sections
+  resources :workouts
+  resources :programs
+  resources :coaches
   resources :tenants do
     resources :members do
       collection do
