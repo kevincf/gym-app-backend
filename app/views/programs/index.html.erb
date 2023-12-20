@@ -6,9 +6,9 @@
   <% @programs.each do |program| %>
     <%= render program %>
     <p>
-      <%= link_to "Show this program", program %>
+      <%= link_to "Show this program", tenant_program_path(@current_tenant, program) %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New program", new_program_path %>
+<%= link_to "New program", new_tenant_program_path %>

@@ -3,8 +3,10 @@
 <%= render @program %>
 
 <div>
-  <%= link_to "Edit this program", edit_program_path(@program) %> |
-  <%= link_to "Back to programs", programs_path %>
+  <%= link_to "Edit this program", edit_tenant_program_path(@program) %> |
+  <%= link_to "Back to programs", tenant_programs_path %>
 
-  <%= button_to "Destroy this program", @program, method: :delete %>
+  <%= button_to "Destroy this program", tenant_program_path(@current_tenant, @program), method: :delete %>
 </div>
+
+<%= link_to 'New Workout', new_tenant_program_workout_path(@current_tenant, @program) %>

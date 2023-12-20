@@ -1,9 +1,10 @@
-class WorkoutsController < ApplicationController
+class WorkoutsController < AuthorizedController
+  before_action :set_program
   before_action :set_workout, only: %i[ show edit update destroy ]
 
   # GET /workouts or /workouts.json
   def index
-    @workouts = Workout.all
+    @workouts = @program.workouts
   end
 
   # GET /workouts/1 or /workouts/1.json
@@ -12,7 +13,7 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts/new
   def new
-    @workout = Workout.new
+    @workout = @program.workouts.new
   end
 
   # GET /workouts/1/edit
@@ -21,12 +22,12 @@ class WorkoutsController < ApplicationController
 
   # POST /workouts or /workouts.json
   def create
-    @workout = Workout.new(workout_params)
+    @workout = @program.workouts.new(workout_params)
 
     respond_to do |format|
       if @workout.save
-        format.html { redirect_to workout_url(@workout), notice: "Workout was successfully created." }
-        format.json { render :show, status: :created, location: @workout }
+        format.html { redirect_to  tenant_program_workout_url(@workout), notice: "Workout was successfully created." }
+        format.json { render :show, status: :created, location: [@current_tenant, @program, @workout] }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @workout.errors, status: :unprocessable_entity }
@@ -38,7 +39,7 @@ class WorkoutsController < ApplicationController
   def update
     respond_to do |format|
       if @workout.update(workout_params)
-        format.html { redirect_to workout_url(@workout), notice: "Workout was successfully updated." }
+        format.html { redirect_to tenant_program_workout_url(@workout), notice: "Workout was successfully updated." }
         format.json { render :show, status: :ok, location: @workout }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,19 +53,26 @@ class WorkoutsController < ApplicationController
     @workout.destroy
 
     respond_to do |format|
-      format.html { redirect_to workouts_url, notice: "Workout was successfully destroyed." }
+      format.html { redirect_to tenant_program_workout_url, notice: "Workout was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_workout
-      @workout = Workout.find(params[:id])
-    end
+  def set_workout
+    @workout = @program.workouts.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def workout_params
-      params.require(:workout).permit(:name, :date, :level, :program_id)
-    end
+  def workout_params
+    params.require(:workout).permit(:name, :date, :level)
+  end
+
+  def set_program
+    @program = @current_tenant.programs.find(params[:program_id])
+  end
+
+
+
+
 end

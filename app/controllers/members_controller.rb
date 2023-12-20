@@ -3,6 +3,8 @@ class MembersController < AuthorizedController
     @members = @current_tenant.members
   end
 
+
+
   def invite
     email= params[:email]
     return redirect_to tenant_members_path(@current_tenant), alert: "Please enter an email address" if email.blank?

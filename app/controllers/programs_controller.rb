@@ -1,31 +1,31 @@
-class ProgramsController < ApplicationController
-  before_action :set_program, only: %i[ show edit update destroy ]
+class ProgramsController < AuthorizedController
+  before_action :set_program, only: %i[show edit update destroy]
 
-  # GET /programs or /programs.json
+  # GET /programs
   def index
-    @programs = Program.all
+    @programs = @current_tenant.programs
   end
 
-  # GET /programs/1 or /programs/1.json
+  # GET /programs/1
   def show
   end
 
   # GET /programs/new
   def new
-    @program = Program.new
+    @program = Program.new  # Corrected this line
   end
 
   # GET /programs/1/edit
   def edit
   end
 
-  # POST /programs or /programs.json
+  # POST /programs
   def create
-    @program = Program.new(program_params)
+    @program = @current_tenant.programs.new(program_params)  # Corrected this line
 
     respond_to do |format|
       if @program.save
-        format.html { redirect_to program_url(@program), notice: "Program was successfully created." }
+        format.html { redirect_to tenant_programs_url(@program), notice: "Program was successfully created." }
         format.json { render :show, status: :created, location: @program }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -34,11 +34,11 @@ class ProgramsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /programs/1 or /programs/1.json
+  # PATCH/PUT /programs/1
   def update
     respond_to do |format|
       if @program.update(program_params)
-        format.html { redirect_to program_url(@program), notice: "Program was successfully updated." }
+        format.html { redirect_to tenant_programs_url(@program), notice: "Program was successfully updated." }
         format.json { render :show, status: :ok, location: @program }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -47,24 +47,25 @@ class ProgramsController < ApplicationController
     end
   end
 
-  # DELETE /programs/1 or /programs/1.json
+  # DELETE /programs/1
   def destroy
     @program.destroy
-
     respond_to do |format|
-      format.html { redirect_to programs_url, notice: "Program was successfully destroyed." }
+      format.html { redirect_to tenant_programs_url, notice: "Program was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_program
-      @program = Program.find(params[:id])
-    end
+  def set_program
+    @program = Program.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def program_params
-      params.require(:program).permit(:name, :price, :duration, :tenant_id)
-    end
+  def program_params
+    params.require(:program).permit(:name, :price, :duration)
+  end
+
+  def current_tenant_id
+    @current_tenant.id
+  end
 end
